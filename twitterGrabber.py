@@ -37,8 +37,7 @@ raw = t.get(endpoint="https://api.twitter.com/1.1/search/tweets.json", params={'
 
 #pprint.PrettyPrinter(indent=4).pprint(raw)
 
-text = ""
-
+imgs = []
 
 for x in raw.get(unicode("statuses")):
     y = x.get(unicode("entities"))
@@ -47,14 +46,14 @@ for x in raw.get(unicode("statuses")):
         url = urlobj.get(unicode("expanded_url"))
         if validURL(url):
             r = requests.get('http://noembed.com/embed', params={'url': url})
-            text += json.loads(r.content).get("html")
-            text += x.get(unicode("text"))
+            img = {}
+            img["media_url"] = unicode(json.loads(r.content).get("media_url"))
+            img["descr"] = x.get(unicode("text"))
+            img["user"] = x.get(unicode("user")).get(unicode("name"))
+            img["date"] = x.get(unicode("created_at"))
+            img["source"] = url
+            imgs.append(img)
+            
 
 
-# soup = BeautifulSoup(raw)
-
-# print(soup.prettify())
-
-
-# auth_tokens = t.get_authorized_tokens()
-# print auth_tokens
+pprint.PrettyPrinter(indent=2).pprint(imgs)
