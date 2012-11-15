@@ -1,0 +1,1 @@
+import sqlite3conn = sqlite3.connect('gallery.db')c = conn.cursor()f = open('init.sql', 'r')for line in f:	c.execute(line)conn.commit()conn.close()
