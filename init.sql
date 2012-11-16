@@ -25,6 +25,8 @@ create table album(
 create table service(
 	id text primary key
 	,handler_url text not null
+	,url_regex text not null
+	,active integer not null default 1
 	,create_time integer not null
 );
 

@@ -9,6 +9,14 @@ class DB:
 	def close(self):
 		self.__connection__.close()
 
+	#Check if something exists (e.g. an album with a given name)
+	def exists(self, sentence, args=()):
+		self.__cursor__.execute(sentence, args)
+		check = self.__cursor__.fetchone()
+
+		return check != None
+
+
 	def get_album_photos(self, album_id):
 		rows = []
 		for row in self.__cursor__.execute('''
@@ -55,3 +63,38 @@ class DB:
 
 		return rows
 				
+	def new_album(self, album_name):
+		if self.exists('select id from album where name = ?', (album_name,)):
+			raise Exception('Album ' + album_name + ' exists')
+		
+		self.__cursor__.execute('insert into album(name, create_time) values(?, datetime(\'now\'))', (album_name,))
+		self.__connection__.commit()
+		self.__cursor__.execute('select id from album where name = ?', (album_name,))
+		id_row = self.__cursor__.fetchone()
+		return id_row[0]
+
+	def get_available_services(self):
+		rows = []
+		for row in self.__cursor__.execute('select id from service where active = 1'):
+			rows.append(row[0])
+
+		return rows
+
+	def get_available_services_regex(self):
+		rows = []
+		for row in self.__cursor__.execute('select id, url_regex from service where active = 1'):
+			rows.append(row)
+
+		return rows
+
+	def new_search(self, album_id, service_id, url):
+		if not self.exists('select id from album where id = ?', (album_id,)):
+			raise Exception('Album #' + str(album_id) + ' does not exist')
+		if not self.exists('select id from service where id = ? and active = 1', (service_id,)):
+			raise Exception('Service ' + str(service_id) + ' does not exist or is not active')
+		if self.exists('select id from search where album_id = ? and service_id = ? and search_url = ?', (album_id, service_id, url)):
+			raise Exception('Search already exists')
+
+		self.__cursor__.execute('insert into search(album_id, service_id, search_url, create_time) values(?, ?, ?, datetime(\'now\'))', (album_id, service_id, url))
+		self.__connection__.commit()
+		

@@ -1,13 +1,22 @@
 #!/usr/bin/python
 """WSGI server example"""
 from gevent.pywsgi import WSGIServer
-import urlparse, json, dbaccess
-
+import urlparse, json, dbaccess, re, urllib
 
 def application(env, start_response):
+
+	#handle the possibility of a jsonp callback
+	def do_return(json, qs, code='200 OK'):
+		start_response(code, [('Content-Type', 'application/json')])
+		if "callback" in qs:
+			callback = qs['callback'][0]
+			return [callback + '(' + json + ')']
+		return json
+
+
 	operation = env['PATH_INFO']
 
-	if operation == '/album':
+	if operation == '/album': ############################################### album
 		qs = urlparse.parse_qs(env['QUERY_STRING'])
 		if 'id' in qs:
 			db = dbaccess.DB()
@@ -29,27 +38,75 @@ def application(env, start_response):
 					,'user_profile_url': p[7]
 				} for p in photos]
 
-			start_response('200 OK', [('Content-Type', 'application/json')])
-
 			db.close()
-			if "callback" in qs:
-				callback = qs['callback'][0]
-				return [callback + '(' + json.dumps(response, indent=2) + ')']
-			return json.dumps(response, indent=2)
+			jsresp = json.dumps(response, indent=2)
+			return do_return(jsresp, qs)
 
 
-	if operation == '/albums':
+	if operation == '/albums': ############################################### albums
 		db = dbaccess.DB()
 		albums = db.get_albums()
 
 		qs = urlparse.parse_qs(env['QUERY_STRING'])
 
 		db.close()
-		start_response('200 OK', [('Content-Type', 'application/json')])
-		if "callback" in qs:
-			callback = qs['callback'][0]
-			return [callback + '(' + json.dumps([{'id': a[0], 'name': a[1]} for a in albums]) + ')']
-		return json.dumps([{'id': a[0], 'name': a[1]} for a in albums], indent=2)
+		jsresp = json.dumps([{'id': a[0], 'name': a[1]} for a in albums])
+
+		return do_return(jsresp, qs)
+
+	if operation == '/add_album': ############################################### add_album
+		qs = urlparse.parse_qs(env['QUERY_STRING'])
+
+		if 'name' in qs:
+			try:
+				album_name = qs['name'][0]
+
+				db = dbaccess.DB()
+				id = db.new_album(album_name)
+
+				db.close()
+
+				return do_return(json.dumps(id), qs)
+			except Exception as e:
+				return do_return(json.dumps({'error': str(e)}), qs, '500 Internal Server Error')
+
+
+	if operation == '/available_services': ############################################### available_services
+		qs = urlparse.parse_qs(env['QUERY_STRING'])
+
+		db = dbaccess.DB()
+		services = db.get_available_services()
+
+		db.close()
+
+		return do_return(json.dumps(services, indent=2), qs)
+
+	if operation == '/add_search': ############################################### add_search
+		qs = urlparse.parse_qs(env['QUERY_STRING'])
+		if 'url' in qs and 'album_id' in qs:
+			url = qs['url'][0]
+			album_id = qs['album_id'][0]
+
+			db = dbaccess.DB()
+			services = db.get_available_services_regex()
+
+			service_id = None
+			for s in services:
+				if re.match(s[1], url):
+					service_id = s[0]
+
+			if service_id is None:
+				return do_return(json.dumps({'error': 'The search url does not specify any active service'}), qs, '500 Internal Server Error')
+
+			try:
+				print(urllib.quote(url))
+				db.new_search(album_id, service_id, urllib.quote(url))
+			except Exception as e:
+				return do_return(json.dumps({'error': str(e)}), qs, '500 Internal Server Error')
+
+			return do_return(json.dumps('OK'), qs)
+
+
 
 	#If everything else fails...
 	start_response('404 Not Found', [('Content-Type', 'text/html')])
