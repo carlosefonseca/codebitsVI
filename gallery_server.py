@@ -13,7 +13,6 @@ def application(env, start_response):
 			db = dbaccess.DB()
 
 			album_id = qs['id'][0]
-			callback = qs['callback'][0]
 
 			photos = db.get_album_photos(album_id)
 			response = {'name': '', 'photos':[]}
@@ -33,15 +32,24 @@ def application(env, start_response):
 			start_response('200 OK', [('Content-Type', 'application/json')])
 
 			db.close()
-			return [callback + '(' + json.dumps(response) + ')']
+			if "callback" in qs:
+				callback = qs['callback'][0]
+				return [callback + '(' + json.dumps(response, indent=2) + ')']
+			return json.dumps(response, indent=2)
+
 
 	if operation == '/albums':
 		db = dbaccess.DB()
 		albums = db.get_albums()
 
+		qs = urlparse.parse_qs(env['QUERY_STRING'])
+
 		db.close()
 		start_response('200 OK', [('Content-Type', 'application/json')])
-		return [callback + '(' + json.dumps([{'id': a[0], 'name': a[1]} for a in albums]) + ')']
+		if "callback" in qs:
+			callback = qs['callback'][0]
+			return [callback + '(' + json.dumps([{'id': a[0], 'name': a[1]} for a in albums]) + ')']
+		return json.dumps([{'id': a[0], 'name': a[1]} for a in albums], indent=2)
 
 	#If everything else fails...
 	start_response('404 Not Found', [('Content-Type', 'text/html')])
