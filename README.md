@@ -1,0 +1,1 @@
+The One GalleryA Photo gallery to show photos from multiple sources.Dependencies:	gevent (pip install gevent)		libevent (http://libevent.org/)		cython (pip install cython)
