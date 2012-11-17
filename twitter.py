@@ -10,6 +10,7 @@ import requests
 import dbaccess
 import time
 import gevent
+import urllib
 
 __SERVICE__ = "TWITTER"
 
@@ -43,7 +44,7 @@ def do_search(search_id, url):
 	oauth_token and oauth_token_secret come from the previous step
 	if needed, store those in a session variable or something
 	'''
-
+	print('searching url: ' + url)
 	t = Twython(app_key="yMNdpqYz5ke32Z6jCZsE7w",
 							app_secret="5oDqxINNVOH1CHDJdUp2Mz3nwEgbBGeczJufD957S2k",
 							oauth_token="15439239-rJspSTXhfu4hnJ7MyT4iJUagmsg8I3HV9zsTTPs",
@@ -90,9 +91,15 @@ if __name__ == '__main__':
 	while True:
 		print('searching...')
 		if check_searches_counter % 5 == 0:
+			print('getting searches')
 			searches = db.get_searches_by_service(__SERVICE__)
+		check_searches_counter += 1
 		
-		for s in searches:
-			gevent.spawn(lambda : do_search(s[0], s[1]))
+		print(searches)
+		jobs = [gevent.spawn(lambda : do_search(s[0], urllib.unquote(s[1]))) for s in searches]
 
-		time.sleep(30)
+		gevent.joinall(jobs)
+
+		time_sleep = 300
+		print('sleeping for ' + str(time_sleep) + 's...')
+		time.sleep(time_sleep)

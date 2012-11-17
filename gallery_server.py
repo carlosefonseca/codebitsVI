@@ -2,13 +2,13 @@
 """WSGI server example"""
 from gevent.pywsgi import WSGIServer
 import urlparse, json, dbaccess, re, urllib, gevent
-import dummy_grabber, flickr, twitter, generic #, sapophotos
+import dummy_grabber, flickr, twitter, generic, sapophotos
 
 
 __GRABBERS__ = {
 		'TWITTER': twitter,
 		'FLICKR': flickr,
-		#'SAPO_PHOTOS': sapophotos,
+		'SAPO_PHOTOS': sapophotos,
 		'DUMMY': dummy_grabber,
 		'GENERIC': generic.GenericGrabber()
 }
