@@ -1,14 +1,14 @@
 #!/usr/bin/python
 """WSGI server example"""
 from gevent.pywsgi import WSGIServer
-import urlparse, json, dbaccess, re, urllib
-import flickr, sapophotos, twitter
+import urlparse, json, dbaccess, re, urllib, gevent
+import dummy_grabber, flickr, twitter#, sapophotos
 
 
 __GRABBERS__ = {
 		'TWITTER': twitter,
 		'FLICKR': flickr,
-		'SAPO_PHOTOS': sapophotos,
+		#'SAPO_PHOTOS': sapophotos,
 		'DUMMY': dummy_grabber
 }
 
@@ -110,12 +110,11 @@ def application(env, start_response):
 			try:
 				#save the new search and call the respective grabber
 				id = db.new_search(album_id, service_id, urllib.quote(url))
-				__GRABBERS__[service_id].do_search(id, url)
+				gevent.spawn(lambda : __GRABBERS__[service_id].do_search(id, url))
 			except Exception as e:
 				return do_return(json.dumps({'error': str(e)}), qs, '500 Internal Server Error')
 
 			return do_return(json.dumps('OK'), qs)
-
 
 
 	#If everything else fails...

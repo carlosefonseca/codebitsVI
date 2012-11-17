@@ -50,24 +50,6 @@ def processURL(url):
     return figureTheURL(u.path)
     print
 
-# 
-# 
-# print pathparts
-# 
-# if (pathparts[0] == "photos"):
-#     user = pathparts[1]
-#     photo = pathparts[2]
-#     
-#     print user," - ",photo
-# 
-# 
-processURL(u"http://flickr.com")
-processURL(u"http://flickr.com/photos")
-processURL(u"http://flickr.com/photos/whatever-/6893874613/")
-
-
-photos = []
-
 
 def processPhotoFromResponse(photo):
     img["media_url"] = "http://farm"+photo.get("farm")+".staticflickr.com/"+photo.get("server")+"/"+photo.get("id")+"_"+photo.get("secret")+"_b.jpg"
@@ -77,3 +59,23 @@ def processPhotoFromResponse(photo):
     img["source"] = photo.find("urls/url[@type='photopage']").text
 
     return rsp
+
+
+if __name__ == '__main__':
+	# 
+	# 
+	# print pathparts
+	# 
+	# if (pathparts[0] == "photos"):
+	#     user = pathparts[1]
+	#     photo = pathparts[2]
+	#     
+	#     print user," - ",photo
+	# 
+	# 
+	processURL(u"http://flickr.com")
+	processURL(u"http://flickr.com/photos")
+	processURL(u"http://flickr.com/photos/whatever-/6893874613/")
+
+
+	photos = []

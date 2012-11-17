@@ -22,38 +22,38 @@ def validURL(url):
     return regex1.match(url);
 
 
+if __name__ == '__main__':
+	'''
+	oauth_token and oauth_token_secret come from the previous step
+	if needed, store those in a session variable or something
+	'''
 
-'''
-oauth_token and oauth_token_secret come from the previous step
-if needed, store those in a session variable or something
-'''
+	t = Twython(app_key="yMNdpqYz5ke32Z6jCZsE7w",
+							app_secret="5oDqxINNVOH1CHDJdUp2Mz3nwEgbBGeczJufD957S2k",
+							oauth_token="15439239-rJspSTXhfu4hnJ7MyT4iJUagmsg8I3HV9zsTTPs",
+							oauth_token_secret="nUeFkU3HVOXsVUFNJPljGbDvqF0apKimHvXFQ3dvNA")
 
-t = Twython(app_key="yMNdpqYz5ke32Z6jCZsE7w",
-            app_secret="5oDqxINNVOH1CHDJdUp2Mz3nwEgbBGeczJufD957S2k",
-            oauth_token="15439239-rJspSTXhfu4hnJ7MyT4iJUagmsg8I3HV9zsTTPs",
-            oauth_token_secret="nUeFkU3HVOXsVUFNJPljGbDvqF0apKimHvXFQ3dvNA")
+	raw = t.get(endpoint="https://api.twitter.com/1.1/search/tweets.json", params={'q':"codebits -won -badge filter:links", 'count':100, 'result_type':'recent'})
 
-raw = t.get(endpoint="https://api.twitter.com/1.1/search/tweets.json", params={'q':"codebits -won -badge filter:links", 'count':100, 'result_type':'recent'})
+	#pprint.PrettyPrinter(indent=4).pprint(raw)
 
-#pprint.PrettyPrinter(indent=4).pprint(raw)
+	imgs = []
 
-imgs = []
-
-for x in raw.get(unicode("statuses")):
-    y = x.get(unicode("entities"))
-    y = y.get(unicode("urls"))
-    for urlobj in y:
-        url = urlobj.get(unicode("expanded_url"))
-        if validURL(url):
-            r = requests.get('http://noembed.com/embed', params={'url': url})
-            img = {}
-            img["media_url"] = unicode(json.loads(r.content).get("media_url"))
-            img["descr"] = x.get(unicode("text"))
-            img["user"] = x.get(unicode("user")).get(unicode("name"))
-            img["date"] = x.get(unicode("created_at"))
-            img["source"] = url
-            imgs.append(img)
-            
+	for x in raw.get(unicode("statuses")):
+			y = x.get(unicode("entities"))
+			y = y.get(unicode("urls"))
+			for urlobj in y:
+					url = urlobj.get(unicode("expanded_url"))
+					if validURL(url):
+							r = requests.get('http://noembed.com/embed', params={'url': url})
+							img = {}
+							img["media_url"] = unicode(json.loads(r.content).get("media_url"))
+							img["descr"] = x.get(unicode("text"))
+							img["user"] = x.get(unicode("user")).get(unicode("name"))
+							img["date"] = x.get(unicode("created_at"))
+							img["source"] = url
+							imgs.append(img)
+							
 
 
-pprint.PrettyPrinter(indent=2).pprint(imgs)
+	pprint.PrettyPrinter(indent=2).pprint(imgs)
