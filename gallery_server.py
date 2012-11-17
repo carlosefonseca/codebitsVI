@@ -2,6 +2,14 @@
 """WSGI server example"""
 from gevent.pywsgi import WSGIServer
 import urlparse, json, dbaccess, re, urllib
+import flickr, sapophotos, twitter
+
+
+__GRABBERS__ = {
+		'TWITTER': twitter,
+		'FLICKR': flickr,
+		'SAPO_PHOTOS': sapophotos
+}
 
 def application(env, start_response):
 
@@ -99,8 +107,9 @@ def application(env, start_response):
 				return do_return(json.dumps({'error': 'The search url does not specify any active service'}), qs, '500 Internal Server Error')
 
 			try:
-				print(urllib.quote(url))
-				db.new_search(album_id, service_id, urllib.quote(url))
+				#save the new search and call the respective grabber
+				id = db.new_search(album_id, service_id, urllib.quote(url))
+				__GRABBERS__[service_id].do_search(id, url)
 			except Exception as e:
 				return do_return(json.dumps({'error': str(e)}), qs, '500 Internal Server Error')
 
