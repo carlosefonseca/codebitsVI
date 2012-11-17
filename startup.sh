@@ -1,0 +1,1 @@
+#!/bin/bashpython gallery_server.py &python twitter.py &python sapophotos.py &
