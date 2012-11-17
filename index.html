@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Teste</title>
+
+	<link rel="stylesheet" href="http://css.ink.sapo.pt/v1/css/ink.css">
+	
+	<script type="text/javascript" src="http://js.sapo.pt/Bundles/Ink-v1.js"></script>
+	<script type="text/javascript" src="http://js.sapo.pt/SAPO/Communication/JsonP/0.1/"></script>
+	<script src="jquery.js" type="text/javascript"></script>
+	<script src="scripts/variables.js" type="text/javascript"></script>
+	<script src="scripts/gallery.js" type="text/javascript"></script>
+	<script src="scripts/tabstuff.js" type="text/javascript"></script>
+	<script src="scripts/ModalWindow.js" type="text/javascript"></script>
+	
+
+
+
+	<script type="text/javascript">
+
+	$(document).ready(function() {
+		initApp();
+		showLoginWindow();
+		
+	});
+
+	</script>
+
+
+
+</head>
+
+<body>
+
+
+	<nav class="ink-container ink-navigation">
+		<ul class="horizontal menu ink-l100">
+			<li class="ink-l25" align="center">
+				<a href="javascript:changeToMainTab()" id="dashboard_bt">Hi Stranger!</a>
+			</li>
+			<li class="ink-l25" align="center">
+				<a href="javascript:changeToGalleryTab()">Gallery</a>
+				<ul class="submenu" id="gallery_submenus">
+
+				</ul>
+			</li>
+			<li class="ink-l25" align="center">
+				<a href="javascript:changeToHelpTab()">Help</a>
+			</li>
+			<li class="ink-l25" align="center">
+				<a href="javascript:changeToSettingsTab()">Settings</a>
+			</li>
+		</ul>
+	</nav>
+
+	<div class="ink-container" id="title_container">
+		<h1 id="title_content"></h1>
+	</div>
+
+	<div class="ink-container" id="main_container" style="height:460px;">
+		
+	</div>
+
+	<div class="ink-container">
+		<div class="ink-l100">
+			<nav class="ink-navigation">
+				<ul class="pagination" id="pagination_ul">
+				</ul>
+			</nav>
+		</div>
+	</div>
+
+	<div class="ink-container">
+		<div class="ink-l20" style="height:40px">
+			<img src="codebits_logo.png"></img>
+		</div>
+	</div>
+
+
+	<div id="modalContent" style="display:none">
+		<div class="ink-space">
+			<h1>Login</h1>
+
+			<form class="ink-form block" method="post" action="javascript:dismissLoginWindow();" onsubmit="return SAPO.Ink.FormValidator.validate(this);">
+				<fieldset>
+					<legend>Insert username and password:</legend>
+					<div class="control required">
+						<label for="name_field" class="short">Username:</label>
+						<input type="text" name="name" id="name_field" class="ink-fv-required" />
+					</div>
+
+					<div class="control required">
+						<label for="password_field" class="short">Password:</label>
+						<input type="password" id="password_field" class="wide">
+					</div>
+				</fieldset>
+				<button  id="form_submit" class="ink-button success">Submit</button>
+			</form>
+		</div>
+	</div>
+
+
+
+	
+	
+
+</body>
+
+</html>

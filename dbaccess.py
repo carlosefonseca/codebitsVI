@@ -126,3 +126,15 @@ class DB:
 	def calculateId(self, url): 
 		# devia-se fazer alguma filtragem do URL
 		return hashlib.md5(url).hexdigest()
+
+	def service_regex(self, service_id):
+		self.__cursor__.execute('select url_regex from service where id = ?', (service_id,))
+		regex_row = self.__cursor__.fetchone()
+		return regex_row[0]
+
+	def get_searches_by_service(self, service_id):
+		searches = []
+		for search in self.__cursor__.execute('select id, search_url from search where service_id = ?', (service_id,)):
+			searches.append(search)
+
+		return searches
