@@ -1,4 +1,5 @@
 import sqlite3
+import hashlib
 
 class DB:
 
@@ -97,4 +98,27 @@ class DB:
 
 		self.__cursor__.execute('insert into search(album_id, service_id, search_url, create_time) values(?, ?, ?, datetime(\'now\'))', (album_id, service_id, url))
 		self.__connection__.commit()
+
+	def new_photo(self, imgid, url, source_url = "", thumb_url = "", title = "", description = "", user_name = "", user_profile_url = "", create_time = ""):
+		if not url:
+			raise Exception("URL required.")
 		
+ 		self.__cursor__.execute('''insert into photo (id, url, source_url, thumb_url, title, description, user_name, user_profile_url, create_time)
+											   values(?, 	?, 			?, 		?, 		?, 			?, 			?, 			?, 			?)''',
+											   		imgid, url, source_url, thumb_url, title, description, user_name, user_profile_url, create_time)
+		self.__connection__.commit()
+
+
+	def new_photo_on_search(self, search_id, imgid):
+		self.__cursor__.execute('''insert into search2photo (search_id, photo_id) values (?, ?)''', search_id, imgid)
+		self.__connection__.commit();
+
+	def new_photo_from_search(self, search_id, url, source_url, thumb_url, title, description, user_name, user_profile_url, create_time):
+		imgid = calculateId(url) 		
+		new_photo(self, imgid, url, source_url, thumb_url, title, description, user_name, user_profile_url, create_time)
+		new_photo_on_search(search_id, imgid)
+
+	def calculateId(url) {
+		# devia-se fazer alguma filtragem do URL
+		return hashlib.md5(url).hexdigest()
+	}
