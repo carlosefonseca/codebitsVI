@@ -1,0 +1,1 @@
+import timedef do_search(search_id, url):	print('doing dummy search...')	print('search_id: ' +  str(search_id))	print('url: ' + url)	i = 1	while i < 100:		print('Searching ' + url + ' (x' + str(i) + ')')		time.sleep(5)
