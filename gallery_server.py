@@ -71,7 +71,7 @@ def application(env, start_response):
 				return do_return(json.dumps({'error': str(e)}), qs, '500 Internal Server Error')
 
 
-	if operation == '/available_services': ############################################### available_services
+	if operation == '/services': ############################################### services
 		qs = urlparse.parse_qs(env['QUERY_STRING'])
 
 		db = dbaccess.DB()
