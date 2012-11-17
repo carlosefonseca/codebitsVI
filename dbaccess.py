@@ -107,21 +107,22 @@ class DB:
 		if not url:
 			raise Exception("URL required.")
 		
+		print "imgid:",imgid
  		self.__cursor__.execute('''insert into photo (id, url, source_url, thumb_url, title, description, user_name, user_profile_url, create_time)
 											   values(?, 	?, 			?, 		?, 		?, 			?, 			?, 			?, 			?)''',
-											   		imgid, url, source_url, thumb_url, title, description, user_name, user_profile_url, create_time)
+											   		(imgid, url, source_url, thumb_url, title, description, user_name, user_profile_url, create_time))
 		self.__connection__.commit()
 
 
 	def new_photo_on_search(self, search_id, imgid):
-		self.__cursor__.execute('''insert into search2photo (search_id, photo_id) values (?, ?)''', search_id, imgid)
+		self.__cursor__.execute('''insert into search2photo (search_id, photo_id) values (?, ?)''', (search_id, imgid))
 		self.__connection__.commit();
 
-	def new_photo_from_search(self, search_id, url, source_url, thumb_url, title, description, user_name, user_profile_url, create_time):
-		imgid = calculateId(url) 		
-		new_photo(self, imgid, url, source_url, thumb_url, title, description, user_name, user_profile_url, create_time)
-		new_photo_on_search(search_id, imgid)
+	def new_photo_from_search(self, search_id, url, source_url, thumb_url = "", title = "", description = "", user_name = "", user_profile_url = "", create_time = ""):
+		imgid = self.calculateId(url) 		
+		self.new_photo(imgid, url, source_url, thumb_url, title, description, user_name, user_profile_url, create_time)
+		self.new_photo_on_search(search_id, imgid)
 
-	def calculateId(url): 
+	def calculateId(self, url): 
 		# devia-se fazer alguma filtragem do URL
 		return hashlib.md5(url).hexdigest()
