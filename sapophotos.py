@@ -1,11 +1,12 @@
 import requests
 import json
 import urlparse
-from dbaccess import DB
+import dbaccess
+import gevent, time
 
 headers = {"Authorization": "ESB AccessKey=5628E260-0518-4DD4-BD50-E98334BFCB32"}
 first = True
-db = DB()
+__SERVICE__ = 'SAPO_PHOTOS'
 
 
 def sapophotos(first):
@@ -45,4 +46,22 @@ def savePhoto(search_id, x):
 
 
 if __name__ == "__main__":
-    do_search(20, "")
+	db = dbaccess.DB()
+	searches = db.get_searches_by_service(__SERVICE__)
+
+	check_searches_counter = 0
+	while True:
+		print('searching...')
+		if check_searches_counter % 5 == 0:
+			print('getting searches')
+			searches = db.get_searches_by_service(__SERVICE__)
+		check_searches_counter += 1
+		
+		print(searches)
+		jobs = [gevent.spawn(lambda : do_search(s[0], urllib.unquote(s[1]))) for s in searches]
+
+		gevent.joinall(jobs)
+
+		time_sleep = 300
+		print('sleeping for ' + str(time_sleep) + 's...')
+		time.sleep(time_sleep)
