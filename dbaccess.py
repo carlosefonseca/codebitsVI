@@ -115,7 +115,7 @@ class DB:
 
 
 	def new_photo_on_search(self, search_id, imgid):
-		self.__cursor__.execute('''insert into search2photo (search_id, photo_id) values (?, ?)''', (search_id, imgid))
+		self.__cursor__.execute('''insert into search2photo (search_id, photo_id, create_time) values (?, ?, datetime(\'now\'))''', (search_id, imgid))
 		self.__connection__.commit();
 
 	def new_photo_from_search(self, search_id, url, source_url, thumb_url = "", title = "", description = "", user_name = "", user_profile_url = "", create_time = ""):

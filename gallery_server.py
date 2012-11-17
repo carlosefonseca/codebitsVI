@@ -2,14 +2,15 @@
 """WSGI server example"""
 from gevent.pywsgi import WSGIServer
 import urlparse, json, dbaccess, re, urllib, gevent
-import dummy_grabber, flickr, twitter#, sapophotos
+import dummy_grabber, flickr, twitter, generic #, sapophotos
 
 
 __GRABBERS__ = {
 		'TWITTER': twitter,
 		'FLICKR': flickr,
 		#'SAPO_PHOTOS': sapophotos,
-		'DUMMY': dummy_grabber
+		'DUMMY': dummy_grabber,
+		'GENERIC': generic.GenericGrabber()
 }
 
 def application(env, start_response):
@@ -105,14 +106,15 @@ def application(env, start_response):
 					service_id = s[0]
 
 			if service_id is None:
-				return do_return(json.dumps({'error': 'The search url does not specify any active service'}), qs, '500 Internal Server Error')
+				service_id = __GRABBERS__["GENERIC"]
+				# return do_return(json.dumps({'error': 'The search url does not specify any active service'}), qs, '500 Internal Server Error')
 
-			try:
+			# try:
 				#save the new search and call the respective grabber
-				id = db.new_search(album_id, service_id, urllib.quote(url))
-				gevent.spawn(lambda : __GRABBERS__[service_id].do_search(id, url))
-			except Exception as e:
-				return do_return(json.dumps({'error': str(e)}), qs, '500 Internal Server Error')
+			id = db.new_search(album_id, service_id, urllib.quote(url))
+			gevent.spawn(lambda : __GRABBERS__[service_id].do_search(id, url))
+			# except Exception as e:
+				# return do_return(json.dumps({'error': str(e)}), qs, '500 Internal Server Error')
 
 			return do_return(json.dumps('OK'), qs)
 
