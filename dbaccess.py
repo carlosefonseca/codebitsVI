@@ -98,6 +98,10 @@ class DB:
 
 		self.__cursor__.execute('insert into search(album_id, service_id, search_url, create_time) values(?, ?, ?, datetime(\'now\'))', (album_id, service_id, url))
 		self.__connection__.commit()
+		self.__cursor__.execute('select max(id) from search')
+		id_row = self.__cursor__.fetchone()
+		return id_row[0]
+
 
 	def new_photo(self, imgid, url, source_url = "", thumb_url = "", title = "", description = "", user_name = "", user_profile_url = "", create_time = ""):
 		if not url:
@@ -118,7 +122,6 @@ class DB:
 		new_photo(self, imgid, url, source_url, thumb_url, title, description, user_name, user_profile_url, create_time)
 		new_photo_on_search(search_id, imgid)
 
-	def calculateId(url) {
+	def calculateId(url): 
 		# devia-se fazer alguma filtragem do URL
 		return hashlib.md5(url).hexdigest()
-	}

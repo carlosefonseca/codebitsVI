@@ -1,7 +1,8 @@
 insert into service(id, handler_url, url_regex, active, create_time)
 values ('TWITTER', '', 'https?://twitter.com/search?.*q=([^&]+).*', 1, datetime('now')),
 ('FLICKR', '', 'https?://www.flickr.com/search/?.*q=([^&]+).*', 1, datetime('now')),
-('SAPO_PHOTOS', '', 'http://fotos.sapo.pt/pesquisa?.*termos=([^&]+).*', 1, datetime('now'));
+('SAPO_PHOTOS', '', 'http://fotos.sapo.pt/pesquisa?.*termos=([^&]+).*', 1, datetime('now')),
+('DUMMY', '', 'dummy://.*', 1, datetime('now'));
 
 insert into album(rowid, name, create_time)
 values (123, 'test album', datetime('now'));

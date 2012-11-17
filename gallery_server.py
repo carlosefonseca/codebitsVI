@@ -8,7 +8,8 @@ import flickr, sapophotos, twitter
 __GRABBERS__ = {
 		'TWITTER': twitter,
 		'FLICKR': flickr,
-		'SAPO_PHOTOS': sapophotos
+		'SAPO_PHOTOS': sapophotos,
+		'DUMMY': dummy_grabber
 }
 
 def application(env, start_response):
